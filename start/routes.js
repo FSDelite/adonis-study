@@ -24,5 +24,5 @@ Route.post("/register", "AuthController.register");
 Route.post("/authenticate", "AuthController.authenticate");
 
 Route.group(() => {
-  Route.resource("tasks", "TaskController").apiOnly();
+  Route.resource("task", "TaskController").apiOnly();
 }).middleware("auth");
