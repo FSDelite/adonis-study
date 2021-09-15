@@ -62,7 +62,7 @@ class TaskController {
       return response.status(401);
     }
 
-    await tweet.delete();
+    await task.delete();
   }
 }
 
