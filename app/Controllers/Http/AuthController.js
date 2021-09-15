@@ -1,6 +1,6 @@
 "use strict";
 
-const User = require("../../Models/User");
+const User = use("App/Models/User");
 
 class AuthController {
   async register({ request }) {
@@ -16,7 +16,7 @@ class AuthController {
     return user;
   }
 
-  async authenticate({ request }) {
+  async authenticate({ request, auth }) {
     const { email, password } = request.all();
 
     const token = await auth.attempt(email, password);
