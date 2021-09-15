@@ -1,4 +1,6 @@
-'use strict'
+"use strict";
+
+const TaskController = require("../app/Controllers/Http/TaskController");
 
 /*
 |--------------------------------------------------------------------------
@@ -14,8 +16,14 @@
 */
 
 /** @type {typeof import('@adonisjs/framework/src/Route/Manager')} */
-const Route = use('Route')
+const Route = use("Route");
 
-Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
-})
+Route.get("/home", () => {
+  return { greeting: "Hello world in JSON" };
+});
+Route.post("/register", "AuthController.register");
+Route.post("/authenticate", "AuthController.authenticate");
+
+Route.group(() => {
+  Route.resource("tasks", "TaskController").apiOnly();
+}).middleware("auth");
