@@ -1,6 +1,5 @@
 "use strict";
 
-const TaskController = require("../app/Controllers/Http/TaskController");
 
 /*
 |--------------------------------------------------------------------------
