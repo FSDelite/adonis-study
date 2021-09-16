@@ -15,6 +15,17 @@ class AuthController {
     const user = await User.create(data);
     return user;
   }
+  async registerAdmin({ request }) {
+    const data = request.only([
+      "name",
+      "cpf",
+      "password",
+      "email",
+      "is_admin",
+    ]);
+    const user = await User.create(data);
+    return user;
+  }
 
   async authenticate({ request, auth }) {
     const { email, password } = request.all();

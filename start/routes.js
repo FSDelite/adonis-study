@@ -1,6 +1,5 @@
 "use strict";
 
-
 /*
 |--------------------------------------------------------------------------
 | Routes
@@ -21,8 +20,12 @@ Route.get("/home", () => {
   return { greeting: "Hello world in JSON" };
 });
 Route.post("/register", "AuthController.register");
+Route.post("/register/admin", "AuthController.registerAdmin")
 Route.post("/authenticate", "AuthController.authenticate");
 
 Route.group(() => {
   Route.resource("tasks", "TaskController").apiOnly();
+}).middleware("auth");
+Route.group(() => {
+  Route.resource("users", "UserController").apiOnly();
 }).middleware("auth");

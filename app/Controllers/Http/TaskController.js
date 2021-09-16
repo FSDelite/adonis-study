@@ -18,10 +18,16 @@ class TaskController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, view }) {
-    const tasks = await Task.query().with("user").fetch();
-
-    return tasks;
+  async index({ auth }) {
+    const isAdmin = auth.user.is_admin;
+    if(isAdmin){
+      const tasks = await Task.query().with("user").fetch();
+      return tasks;
+    }
+    else{
+      const tasks =  await Task.query().where("user_id", auth.user.id).fetch();
+      return tasks;
+    }
   }
 
   async store({ request, auth }) {

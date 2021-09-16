@@ -14,7 +14,17 @@ class UserController {
    * Show a list of all users.
    * GET users
    */
-  async index({ request, response, view }) {}
+  async index({ auth }) {
+    const isAdmin = auth.user.is_admin;
+    if(isAdmin){
+      const users = await User.all();
+
+      return users;
+    }
+    else{
+      return {message: "voce nao está autorizado"}
+    }
+  }
 
   /**
    * Create/save a new user.
