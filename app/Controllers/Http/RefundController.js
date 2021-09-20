@@ -1,9 +1,11 @@
-'use strict'
+"use strict";
+
+const TaskController = require("./TaskController");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
-
+const Refund = use("App/Models/Refund");
 /**
  * Resourceful controller for interacting with refunds
  */
@@ -11,83 +13,64 @@ class RefundController {
   /**
    * Show a list of all refunds.
    * GET refunds
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index({ auth }) {
+    const isAdmin = auth.user.is_admin;
+    if (isAdmin) {
+      const refunds = await Refund.query().with("user").fetch();
+      return refunds;
+    } else {
+      const refunds = await Refund.query()
+        .where("user_id", auth.user.id)
+        .fetch();
+      return refunds;
+    }
   }
 
-  /**
-   * Render a form to be used for creating a new refund.
-   * GET refunds/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
-  }
-
-  /**
+  /*
    * Create/save a new refund.
    * POST refunds
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, auth }) {
+    const data = request.only([
+      "name",
+      "description",
+      "date",
+      "final_value",
+      "path",
+    ]);
+    const refund = await Refund.create({ user_id: auth.user.id, ...data });
+    return refund;
   }
 
   /**
    * Display a single refund.
    * GET refunds/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params }) {
+    const refund = await Refund.findOrFail(params.id);
+    return refund;
   }
 
-  /**
-   * Render a form to update an existing refund.
-   * GET refunds/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
-
-  /**
+  /*
    * Update refund details.
    * PUT or PATCH refunds/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
   /**
    * Delete a refund with id.
    * DELETE refunds/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
+  async destroy({ params, auth, response }) {
+    const refund = await Refund.findOrFail(params.id);
+
+    if (refund.user_id != auth.user.id && !auth.user.is_admin) {
+      return response.status(401);
+    }
+
+    await refund.delete();
   }
 }
 
-module.exports = RefundController
+module.exports = RefundController;

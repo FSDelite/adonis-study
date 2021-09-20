@@ -12,20 +12,14 @@ class TaskController {
   /**
    * Show a list of all tasks.
    * GET tasks
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
   async index({ auth }) {
     const isAdmin = auth.user.is_admin;
-    if(isAdmin){
+    if (isAdmin) {
       const tasks = await Task.query().with("user").fetch();
       return tasks;
-    }
-    else{
-      const tasks =  await Task.query().where("user_id", auth.user.id).fetch();
+    } else {
+      const tasks = await Task.query().where("user_id", auth.user.id).fetch();
       return tasks;
     }
   }
@@ -47,21 +41,17 @@ class TaskController {
     return task;
   }
 
-  /**
+  /*
    * Update task details.
    * PUT or PATCH tasks/:id
    */
   async update({ params, request, response }) {}
 
-  /**
+  /*
    * Delete a task with id.
    * DELETE tasks/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async destroy({ params, auth }) {
+  async destroy({ params, auth, response }) {
     const task = await Task.findOrFail(params.id);
 
     if (task.user_id != auth.user.id) {
