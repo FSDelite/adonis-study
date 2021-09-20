@@ -65,7 +65,7 @@ class RefundController {
   async destroy({ params, auth, response }) {
     const refund = await Refund.findOrFail(params.id);
 
-    if (refund.user_id != auth.user.id && !auth.user.is_admin) {
+    if (refund.user_id != auth.user.id && (!auth.user.is_admin)) {
       return response.status(401);
     }
 

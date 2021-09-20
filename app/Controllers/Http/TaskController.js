@@ -45,7 +45,26 @@ class TaskController {
    * Update task details.
    * PUT or PATCH tasks/:id
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, auth, response }) {
+    const task = await Task.findOrFail(params.id);
+    if(task.user_id != auth.user.id && (!auth.user.is_admin)){
+       const data = request.only([
+      "name",
+      "description",
+      "link",
+      "start_date",
+      "finish_date",
+    ]);
+    await task.query().where("id", params.id).update(data);
+    return task;
+    }
+    else{
+      return response.status(401);
+    }
+   
+    // const task = await Task.query().where("id", params.id).update(data);
+    // return task;
+  }
 
   /*
    * Delete a task with id.
@@ -54,7 +73,7 @@ class TaskController {
   async destroy({ params, auth, response }) {
     const task = await Task.findOrFail(params.id);
 
-    if (task.user_id != auth.user.id) {
+    if (task.user_id != auth.user.id && (!auth.user.is_admin)) {
       return response.status(401);
     }
 
