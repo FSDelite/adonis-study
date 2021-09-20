@@ -30,5 +30,8 @@ Route.group(() => {
   Route.resource("users", "UserController").apiOnly();
 }).middleware("auth");
 Route.group(() => {
-  Route.resource("refunds", "UserController").apiOnly();
+  Route.resource("refunds", "RefundController").apiOnly();
+}).middleware("auth");
+Route.group(() => {
+  Route.resource("teams", "TeamController").apiOnly();
 }).middleware("auth");

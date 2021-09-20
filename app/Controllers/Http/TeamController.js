@@ -1,9 +1,10 @@
-'use strict'
+"use strict";
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const Team = use("App/Models/Team");
 /**
  * Resourceful controller for interacting with teams
  */
@@ -11,48 +12,45 @@ class TeamController {
   /**
    * Show a list of all teams.
    * GET teams
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new team.
-   * GET teams/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index({ auth }) {
+    if (auth.user.is_admin) {
+      const teams = Team.all();
+      return teams;
+    } else {
+      //trhow error UNAUTHORIZED
+    }
   }
 
   /**
    * Create/save a new team.
    * POST teams
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, auth }) {
+    if (auth.user.is_admin) {
+      const data = request.only(["login", "password"]);
+      const team = await Team.create({ data });
+      return team;
+    } else {
+      //trhow error UNAUTHORIZED
+    }
   }
 
   /**
    * Display a single team.
    * GET teams/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, auth }) {
+    if (auth.user.is_admin) {
+      // SELECT * FROM teams JOIN users ON teams.id = users.team_id WHERE teams.id = 1
+      const team = await Team.query()
+        .innerJoin("users", "teams.id", "users.team_id")
+        .where("teams.id", params.id)
+        .fetch();
+      return team;
+    } else {
+      //trhow error UNAUTHORIZED
+    }
   }
 
   /**
@@ -64,8 +62,7 @@ class TeamController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
-  }
+  async edit({ params, request, response, view }) {}
 
   /**
    * Update team details.
@@ -75,8 +72,7 @@ class TeamController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
   /**
    * Delete a team with id.
@@ -86,8 +82,7 @@ class TeamController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = TeamController
+module.exports = TeamController;
