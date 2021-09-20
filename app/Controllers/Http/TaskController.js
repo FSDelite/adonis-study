@@ -46,22 +46,22 @@ class TaskController {
    * PUT or PATCH tasks/:id
    */
   async update({ params, request, auth, response }) {
-    const task = await Task.findOrFail(params.id);
-    if(task.user_id != auth.user.id && (!auth.user.is_admin)){
-       const data = request.only([
-      "name",
-      "description",
-      "link",
-      "start_date",
-      "finish_date",
-    ]);
-    await task.query().where("id", params.id).update(data);
-    return task;
+    const taskf = await Task.findOrFail(params.id);
+    
+    if (taskf.user_id != auth.user.id && (!user.is_admin)) {
+      return response.status(401).send("Não autorizado a editar a tarefa de outro usuario");;
+    }else{
+    
+    const data = request.only([
+        "name",
+        "description",
+        "link",
+        "start_date",
+        "finish_date",
+      ]);
+      const task = await Task.query().where("id", params.id).update(data);
+      return task;
     }
-    else{
-      return response.status(401);
-    }
-   
     // const task = await Task.query().where("id", params.id).update(data);
     // return task;
   }
@@ -70,11 +70,12 @@ class TaskController {
    * Delete a task with id.
    * DELETE tasks/:id
    */
-  async destroy({ params, auth, response }) {
-    const task = await Task.findOrFail(params.id);
+  async destroy({ request, auth, response }) {
+    const task = await Task.findOrFail(request.params.id);
+    const user = await auth.getUser();
 
-    if (task.user_id != auth.user.id && (!auth.user.is_admin)) {
-      return response.status(401);
+    if (task.user_id != user.id && (!user.is_admin)) {
+     return response.status(401).send("Não autorizado a deletar a tarefa de outro usuario");
     }
 
     await task.delete();
