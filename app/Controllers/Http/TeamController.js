@@ -28,8 +28,8 @@ class TeamController {
    */
   async store({ request, auth }) {
     if (auth.user.is_admin) {
-      const data = request.only(["login", "password"]);
-      const team = await Team.create({ data });
+      const data = request.only(["name","login", "password"]);
+      const team = await Team.create(data);
       return team;
     } else {
       //trhow error UNAUTHORIZED
