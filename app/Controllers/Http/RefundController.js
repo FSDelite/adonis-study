@@ -48,6 +48,7 @@ class RefundController {
    * GET refunds/:id
    */
   async show({ params }) {
+    //Nao deixar eu ver o refund do outro (implementar)
     const refund = await Refund.findOrFail(params.id);
     return refund;
   }
