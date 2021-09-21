@@ -28,7 +28,7 @@ class TeamController {
    */
   async store({ request, auth }) {
     if (auth.user.is_admin) {
-      const data = request.only(["name","login", "password"]);
+      const data = request.only(["name", "login", "password"]);
       const team = await Team.create(data);
       return team;
     } else {
@@ -54,35 +54,34 @@ class TeamController {
   }
 
   /**
-   * Render a form to update an existing team.
-   * GET teams/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit({ params, request, response, view }) {}
-
-  /**
    * Update team details.
    * PUT or PATCH teams/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response, auth }) {
+    const teamf = await Team.findOrFail(params.id);
+
+    if (teamf.id != auth.team.id && !auth.user.is_admin) {
+      return response
+        .status(401)
+        .send("Não autorizado a editar a tarefa de outro usuario");
+    } else {
+      const data = request.only(["name", "login", "password"]);
+      const team = await Team.query().where("id", params.id).update(data);
+      return team;
+    }
+  }
 
   /**
    * Delete a team with id.
    * DELETE teams/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
    */
-  async destroy({ params, request, response }) {}
+  async destroy({ auth, request, response }) {
+    const team = await Team.findOrFail(request.params.id);
+    if (auth.user.is_admin) {
+      await team.delete();
+    }
+    return response.status(401).send("Não autorizado");
+  }
 }
 
 module.exports = TeamController;

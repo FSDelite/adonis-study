@@ -16,13 +16,11 @@ class UserController {
    */
   async index({ auth }) {
     const isAdmin = auth.user.is_admin;
-    if(isAdmin){
+    if (isAdmin) {
       const users = await User.all();
-
       return users;
-    }
-    else{
-      return {message: "voce nao está autorizado"}
+    } else {
+      return { message: "você não está autorizado" };
     }
   }
 
@@ -42,13 +40,33 @@ class UserController {
    * Update user details.
    * PUT or PATCH users/:id
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response, auth }) {
+    const user = await User.findOrFail(params.id);
+
+    if (user.id == auth.user.id || auth.user.is_admin) {
+      const data = request.only(["name", "password", "email", "team_id"]);
+
+      const newUser = await User.query().where("id", params.id).update(data);
+      return newUser;
+    }
+    return response.status(401).send("Não autorizado");
+  }
 
   /**
    * Delete a user with id.
    * DELETE users/:id
    */
-  async destroy({ params, request, response }) {}
+  async destroy({ auth, request, response }) {
+    const user = await User.findOrFail(request.params.id);
+    //const user = await auth.getUser();
+
+    if (!auth.user.is_admin) {
+      return response
+        .status(401)
+        .send("Não autorizado a deletar a tarefa de outro usuario");
+    }
+    await user.delete();
+  }
 }
 
 module.exports = UserController;
