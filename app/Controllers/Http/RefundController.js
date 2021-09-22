@@ -61,7 +61,25 @@ class RefundController {
    * Update refund details.
    * PUT or PATCH refunds/:id
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response, auth }) {
+    const refundFind = await Refund.findOrFail(params.id);
+
+    if (refundFind.user_id != auth.user.id && !auth.user.is_admin) {
+      return response
+        .status(401)
+        .send("Não autorizado a editar o reembolso de outro usuário");
+    } else {
+      const data = request.only([
+        "name",
+        "description",
+        "date",
+        "final_value",
+        "path",
+      ]);
+      const refund = await Refund.query().where("id", params.id).update(data);
+      return refund;
+    }
+  }
 
   /**
    * Delete a refund with id.
