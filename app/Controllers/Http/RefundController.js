@@ -47,10 +47,14 @@ class RefundController {
    * Display a single refund.
    * GET refunds/:id
    */
-  async show({ params }) {
-    //Nao deixar eu ver o refund do outro (implementar)
+  async show({ params, auth }) {
+    //implementar depois que quando o usuário for admin, fazer um join com o usuário que criou ele
     const refund = await Refund.findOrFail(params.id);
-    return refund;
+    if (refund.user_id == auth.user.id || auth.user.is_admin) {
+      return refund;
+    } else {
+      //throw error unauthorized
+    }
   }
 
   /*
@@ -65,11 +69,9 @@ class RefundController {
    */
   async destroy({ params, auth, response }) {
     const refund = await Refund.findOrFail(params.id);
-
-    if (refund.user_id != auth.user.id && (!auth.user.is_admin)) {
+    if (refund.user_id != auth.user.id && !auth.user.is_admin) {
       return response.status(401);
     }
-
     await refund.delete();
   }
 }

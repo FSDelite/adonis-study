@@ -27,6 +27,7 @@ class TeamController {
    * POST teams
    */
   async store({ request, auth }) {
+    //IMPLEMENTAR: fazer a criação de time passar pelo auth
     if (auth.user.is_admin) {
       const data = request.only(["name", "login", "password"]);
       const team = await Team.create(data);
@@ -60,10 +61,10 @@ class TeamController {
   async update({ params, request, response, auth }) {
     const teamf = await Team.findOrFail(params.id);
 
-    if (teamf.id != auth.team.id && !auth.user.is_admin) {
+    if (teamf.id != auth.team.id || !auth.user.is_admin) {
       return response
         .status(401)
-        .send("Não autorizado a editar a tarefa de outro usuario");
+        .send("Não autorizado");
     } else {
       const data = request.only(["name", "login", "password"]);
       const team = await Team.query().where("id", params.id).update(data);

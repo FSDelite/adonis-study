@@ -36,9 +36,14 @@ class TaskController {
     return task;
   }
 
-  async show({ params }) {
+  async show({ params, auth }) {
+    //implementar depois que quando o usuário for admin, fazer um join com o usuário que criou ela
     const task = await Task.findOrFail(params.id);
-    return task;
+    if (task.user_id == auth.user.id || auth.user.is_admin) {
+      return task;
+    } else {
+      //throw error unauthorized
+    }
   }
 
   /*
@@ -51,7 +56,7 @@ class TaskController {
     if (taskFind.user_id != auth.user.id && !auth.user.is_admin) {
       return response
         .status(401)
-        .send("Não autorizado a editar a tarefa de outro usuario");
+        .send("Não autorizado a editar a tarefa de outro usuário");
     } else {
       const data = request.only([
         "name",

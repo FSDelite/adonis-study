@@ -58,12 +58,11 @@ class UserController {
    */
   async destroy({ auth, request, response }) {
     const user = await User.findOrFail(request.params.id);
-    //const user = await auth.getUser();
 
     if (!auth.user.is_admin) {
       return response
         .status(401)
-        .send("Não autorizado a deletar a tarefa de outro usuario");
+        .send("Não autorizado a deletar outro usuário");
     }
     await user.delete();
   }
