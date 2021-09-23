@@ -20,8 +20,10 @@ Route.get("/home", () => {
   return { greeting: "Hello world in JSON" };
 });
 Route.post("/register", "AuthController.register");
-Route.post("/register/admin", "AuthController.registerAdmin")
+Route.post("/register/admin", "AuthController.registerAdmin");
+Route.post("/registerTeam", "AuthController.registerTeam").middleware("auth");
 Route.post("/authenticate", "AuthController.authenticate");
+
 
 Route.group(() => {
   Route.resource("tasks", "TaskController").apiOnly();

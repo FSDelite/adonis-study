@@ -5,6 +5,7 @@
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
 const Team = use("App/Models/Team");
+const UnauthorizedException = use("App/Exceptions/UnauthorizedException");
 /**
  * Resourceful controller for interacting with teams
  */
@@ -18,7 +19,7 @@ class TeamController {
       const teams = Team.all();
       return teams;
     } else {
-      //trhow error UNAUTHORIZED
+      throw new UnauthorizedException("Não autorizado!");
     }
   }
 
@@ -33,7 +34,7 @@ class TeamController {
       const team = await Team.create(data);
       return team;
     } else {
-      //trhow error UNAUTHORIZED
+      throw new UnauthorizedException("Não autorizado!");
     }
   }
 
@@ -50,7 +51,7 @@ class TeamController {
         .fetch();
       return team;
     } else {
-      //trhow error UNAUTHORIZED
+      throw new UnauthorizedException("Não autorizado!");
     }
   }
 
@@ -58,13 +59,11 @@ class TeamController {
    * Update team details.
    * PUT or PATCH teams/:id
    */
-  async update({ params, request, response, auth }) {
+  async update({ params, request, auth }) {
     const teamf = await Team.findOrFail(params.id);
 
-    if (teamf.id != auth.team.id || !auth.user.is_admin) {
-      return response
-        .status(401)
-        .send("Não autorizado");
+    if (teamf.id != auth.id || !auth.user.is_admin) {
+      throw new UnauthorizedException("Não autorizado!");
     } else {
       const data = request.only(["name", "login", "password"]);
       const team = await Team.query().where("id", params.id).update(data);
@@ -76,12 +75,12 @@ class TeamController {
    * Delete a team with id.
    * DELETE teams/:id
    */
-  async destroy({ auth, request, response }) {
+  async destroy({ auth, request }) {
     const team = await Team.findOrFail(request.params.id);
     if (auth.user.is_admin) {
       await team.delete();
     }
-    return response.status(401).send("Não autorizado");
+    throw new UnauthorizedException("Não autorizado!");
   }
 }
 
