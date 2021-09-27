@@ -88,6 +88,7 @@ class TaskController {
    * GET changetaskstatus/:id
    */
 
+  //comentario generico
   async change({ params, auth }) {
     const task = await Task.findOrFail(params.id);
     const user = await auth.getUser();
