@@ -90,10 +90,9 @@ class TaskController {
 
   //comentario generico
   async change({ params, auth }) {
-    const task = await Task.findOrFail(params.id);
     const user = await auth.getUser();
 
-    if (task.user_id != user.id && !user.is_admin) {
+    if (!user.is_admin) {
       throw new UnauthorizedException("Não autorizado");
     }
     const data = { status: "0" };

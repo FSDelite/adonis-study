@@ -94,15 +94,14 @@ class RefundController {
   }
 
   /*
-   * Change status of a task
-   * GET changetaskstatus/:id
+   * Change status of a refund
+   * GET changerefundstatus/:id
    */
 
   async change({ params, auth }) {
-    const refund = await Refund.findOrFail(params.id);
     const user = await auth.getUser();
 
-    if (refund.user_id != user.id && !user.is_admin) {
+    if (!user.is_admin) {
       throw new UnauthorizedException("Não autorizado");
     }
     const data = { status: "0" };
