@@ -92,6 +92,23 @@ class RefundController {
     }
     await refund.delete();
   }
+
+  /*
+   * Change status of a task
+   * GET changetaskstatus/:id
+   */
+
+  async change({ params, auth }) {
+    const refund = await Refund.findOrFail(params.id);
+    const user = await auth.getUser();
+
+    if (refund.user_id != user.id && !user.is_admin) {
+      throw new UnauthorizedException("Não autorizado");
+    }
+    const data = { status: "0" };
+    const refundf = Refund.query().where("id", params.id).update(data);
+    return refundf;
+  }
 }
 
 module.exports = RefundController;

@@ -4,6 +4,7 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 const Task = use("App/Models/Task");
+const UnauthorizedException = use("App/Exceptions/UnauthorizedException");
 
 /**
  * Resourceful controller for interacting with tasks
@@ -54,9 +55,7 @@ class TaskController {
     const taskFind = await Task.findOrFail(params.id);
 
     if (taskFind.user_id != auth.user.id && !auth.user.is_admin) {
-      return response
-        .status(401)
-        .send("Não autorizado a editar a tarefa de outro usuário");
+      throw new UnauthorizedException("Não autorizado!");
     } else {
       const data = request.only([
         "name",
@@ -74,16 +73,31 @@ class TaskController {
    * Delete a task with id.
    * DELETE tasks/:id
    */
-  async destroy({ request, auth, response }) {
+  async destroy({ request, auth }) {
     const task = await Task.findOrFail(request.params.id);
     const user = await auth.getUser();
 
     if (task.user_id != user.id && !user.is_admin) {
-      return response
-        .status(401)
-        .send("Não autorizado a deletar a tarefa de outro usuario");
+      throw new UnauthorizedException("Não autorizado!");
     }
     await task.delete();
+  }
+
+  /*
+   * Change status of a task
+   * GET changetaskstatus/:id
+   */
+
+  async change({ params, auth }) {
+    const task = await Task.findOrFail(params.id);
+    const user = await auth.getUser();
+
+    if (task.user_id != user.id && !user.is_admin) {
+      throw new UnauthorizedException("Não autorizado");
+    }
+    const data = { status: "0" };
+    const taskf = Task.query().where("id", params.id).update(data);
+    return taskf;
   }
 }
 

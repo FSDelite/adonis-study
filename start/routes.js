@@ -23,6 +23,7 @@ Route.post("/register", "AuthController.register");
 Route.post("/register/admin", "AuthController.registerAdmin");
 Route.post("/registerTeam", "AuthController.registerTeam").middleware("auth");
 Route.post("/authenticate", "AuthController.authenticate");
+Route.get("/changetaskstatus/:id", "TaskController.change").middleware("auth");
 
 
 Route.group(() => {
