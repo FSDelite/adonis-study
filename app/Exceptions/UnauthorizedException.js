@@ -1,6 +1,7 @@
 "use strict";
 
 const { LogicalException } = require("@adonisjs/generic-exceptions");
+const sentry = use("Sentry");
 
 class UnauthorizedException extends LogicalException {
   constructor(errorMessage) {
@@ -8,10 +9,11 @@ class UnauthorizedException extends LogicalException {
   }
 
   handle(error, { response }) {
+    sentry.captureException(error);
     response.status(401).send({
       success: false,
       code: this.code,
-      message: error.message
+      message: error.message,
     });
   }
 }
