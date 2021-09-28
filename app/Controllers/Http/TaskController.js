@@ -54,7 +54,7 @@ class TaskController {
   async update({ params, request, auth}) {
     const taskFind = await Task.findOrFail(params.id);
 
-    if ( ((taskFind.user_id != auth.user.id) && (taskFind.status)) || !auth.user.is_admin) {
+    if ( ((taskFind.user_id != auth.user.id) && (taskFind.status)) && !auth.user.is_admin) {
       throw new UnauthorizedException("Não autorizado!");
     } else {
       const data = request.only([

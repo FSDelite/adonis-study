@@ -1,6 +1,6 @@
 "use strict";
 
-const TaskController = require("./TaskController");
+const refundController = require("./refundController");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -64,7 +64,7 @@ class RefundController {
   async update({ params, request, response, auth }) {
     const refundFind = await Refund.findOrFail(params.id);
 
-    if (refundFind.user_id != auth.user.id && !auth.user.is_admin) {
+    if (((refundFind.user_id != auth.user.id) && (refundFind.status)) && !auth.user.is_admin) {
       return response
         .status(401)
         .send("Não autorizado a editar o reembolso de outro usuário");
