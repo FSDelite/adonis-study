@@ -25,6 +25,7 @@ Route.post("/registerTeam", "AuthController.registerTeam").middleware("auth");
 Route.post("/authenticate", "AuthController.authenticate");
 Route.get("/changetaskstatus/:id", "TaskController.change").middleware("auth");
 Route.get("/changerefundstatus/:id", "RefundController.change").middleware("auth");
+Route.put("/changePassword/:id", "AuthController.changePassword").middleware("auth");
 
 
 Route.group(() => {

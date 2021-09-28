@@ -3,6 +3,7 @@
 const User = use("App/Models/User");
 const Team = use("App/Models/Team");
 const UnauthorizedException = use("App/Exceptions/UnauthorizedException");
+const Hash = use('Hash')
 
 class AuthController {
   async register({ request }) {
@@ -36,17 +37,44 @@ class AuthController {
   async authenticate({ request, auth }) {
     const { email, password, login } = request.all();
 
-    if(email){
-    const token = await auth.attempt(email, password);
+    if (email) {
+      const token = await auth.attempt(email, password);
       return token;
-  }
-    if(login){
+    }
+    if (login) {
       email = login;
       const token = await auth.attempt(login, password);
       return token;
     }
-    
   }
+  //ESSA FUNÇÃO NAO É MINHA VV 
+  async changePassword ({ request, auth, response }) {
+    // get currently authenticated user
+    const user = auth.current.user
+
+    // verify if current password matches
+    const verifyPassword = await Hash.verify(
+        request.input('password'),
+        user.password
+    )
+
+    // display appropriate message
+    if (!verifyPassword) {
+        return response.status(400).json({
+            status: 'error',
+            message: 'Current password could not be verified! Please try again.'
+        })
+    }
+
+    // hash and save new password
+    user.password = await Hash.make(request.input('newPassword'))
+    await user.save()
+
+    return response.json({
+        status: 'success',
+        message: 'Password updated!'
+    })
+}
 }
 
 module.exports = AuthController;
