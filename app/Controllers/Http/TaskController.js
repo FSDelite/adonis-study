@@ -34,7 +34,7 @@ class TaskController {
       "start_date",
       "finish_date",
     ]);
-    const sector = await Sector.findOrFail(auth.sector_id);
+    const sector = await Sector.findOrFail(auth.user.sector_id);
     const hour_value = sector.hour_value;
 
     const inicio = new Date(data.start_date).getTime(); // pegando o tempo em milissegundos
