@@ -33,10 +33,16 @@ class TaskController {
       "start_date",
       "finish_date",
     ]);
-    const task = await Task.create({ user_id: auth.user.id, ...data });
-    const teste = (new Date(data.start_date)).getHours();
+
+    const inicio = (new Date(data.start_date)).getHours();
+    const fim = (new Date(data.finish_date)).getHours();
+    const final = fim - inicio
+    const datanovo = {"final_value": final, ...data }
+
+
+    const task = await Task.create({ user_id: auth.user.id, ...datanovo });
     //const teste = data.finish_date - data.start_date;
-    return task, teste;
+    return task;
   }
 
   async show({ params, auth }) {
