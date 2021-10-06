@@ -34,8 +34,9 @@ class TaskController {
       "finish_date",
     ]);
     const task = await Task.create({ user_id: auth.user.id, ...data });
-    const teste =data.finish_date - data.start_date; 
-    return (task, teste);
+    const teste = new Date(data.start_date);
+    //const teste = data.finish_date - data.start_date;
+    return task, teste, data.start_date;
   }
 
   async show({ params, auth }) {
@@ -52,10 +53,14 @@ class TaskController {
    * Update task details.
    * PUT or PATCH tasks/:id
    */
-  async update({ params, request, auth}) {
+  async update({ params, request, auth }) {
     const taskFind = await Task.findOrFail(params.id);
 
-    if ( ((taskFind.user_id != auth.user.id) && (taskFind.status)) && !auth.user.is_admin) {
+    if (
+      taskFind.user_id != auth.user.id &&
+      taskFind.status &&
+      !auth.user.is_admin
+    ) {
       throw new UnauthorizedException("Não autorizado!");
     } else {
       const data = request.only([
