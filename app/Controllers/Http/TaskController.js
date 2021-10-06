@@ -34,11 +34,10 @@ class TaskController {
       "finish_date",
     ]);
 
-    const inicio = (new Date(data.start_date)).getHours();
-    const fim = (new Date(data.finish_date)).getHours();
-    const final = fim - inicio
-    const datanovo = {"final_value": final, ...data }
-
+    const inicio = new Date(data.start_date).getTime(); // pegando o tempo em milissegundos
+    const fim = new Date(data.finish_date).getTime(); // pegando o tempo em milissegundos
+    const final = (fim - inicio) / 3600000; //Convertendo em horas
+    const datanovo = { final_value: final, ...data };
 
     const task = await Task.create({ user_id: auth.user.id, ...datanovo });
     //const teste = data.finish_date - data.start_date;
