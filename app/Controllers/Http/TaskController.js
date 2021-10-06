@@ -34,7 +34,7 @@ class TaskController {
       "finish_date",
     ]);
     const task = await Task.create({ user_id: auth.user.id, ...data });
-    const teste = (new Date(data.start_date)).getHours;
+    const teste = (new Date(data.start_date)).getHours();
     //const teste = data.finish_date - data.start_date;
     return task, teste;
   }
