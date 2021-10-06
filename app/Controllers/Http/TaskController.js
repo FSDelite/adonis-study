@@ -36,7 +36,7 @@ class TaskController {
     const task = await Task.create({ user_id: auth.user.id, ...data });
     const teste = new Date(data.start_date);
     //const teste = data.finish_date - data.start_date;
-    return task, teste, data.start_date;
+    return task, teste;
   }
 
   async show({ params, auth }) {
