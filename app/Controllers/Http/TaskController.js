@@ -6,7 +6,7 @@
 const Task = use("App/Models/Task");
 const Sector = use("App/Models/Sector");
 const UnauthorizedException = use("App/Exceptions/UnauthorizedException");
-const HourDiff = use("App/Utils/HourDiff");
+const TimeDiff = use("App/Utils/TimeDiff");
 
 /**
  * Resourceful controller for interacting with tasks
@@ -45,7 +45,7 @@ class TaskController {
     // const final = Math.ceil(((fim - inicio) / 3600000) * hour_value); //Convertendo em horas
 
     const datanovo = {
-      final_value: HourDiff.HourDiff(
+      final_value: TimeDiff.HourDiff(
         data.start_date,
         data.finish_date,
         sector.hour_value
