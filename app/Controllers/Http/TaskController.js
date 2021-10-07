@@ -45,7 +45,7 @@ class TaskController {
     // const final = Math.ceil(((fim - inicio) / 3600000) * hour_value); //Convertendo em horas
 
     const datanovo = {
-      final_value: TimeDiff.HourDiff( // pro push dar certo
+      final_value: TimeDiff.HourDiff(
         data.start_date,
         data.finish_date,
         sector.hour_value
