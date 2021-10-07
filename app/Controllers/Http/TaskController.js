@@ -6,6 +6,7 @@
 const Task = use("App/Models/Task");
 const Sector = use("App/Models/Sector");
 const UnauthorizedException = use("App/Exceptions/UnauthorizedException");
+const HourDiff = use("App/Utils/HourDiff");
 
 /**
  * Resourceful controller for interacting with tasks
@@ -34,18 +35,23 @@ class TaskController {
       "start_date",
       "finish_date",
     ]);
+
     const sector = await Sector.findOrFail(auth.user.sector_id);
-    const hour_value = sector.hour_value;
+    // const hour_value = sector.hour_value;
 
-    const inicio = new Date(data.start_date).getTime(); // pegando o tempo em milissegundos
-    const fim = new Date(data.finish_date).getTime(); // pegando o tempo em milissegundos
+    // const inicio = new Date(data.start_date).getTime(); // pegando o tempo em milissegundos
+    // const fim = new Date(data.finish_date).getTime(); // pegando o tempo em milissegundos
 
-    const final = Math.ceil(((fim - inicio) / 3600000) * hour_value); //Convertendo em horas
-    
-    const datanovo = { final_value: final, ...data };
+    // const final = Math.ceil(((fim - inicio) / 3600000) * hour_value); //Convertendo em horas
 
-
-
+    const datanovo = {
+      final_value: HourDiff.hourDiff(
+        data.start_date,
+        data.finish_date,
+        sector.hour_value
+      ),
+      ...data,
+    };
 
     const task = await Task.create({ user_id: auth.user.id, ...datanovo });
     //const teste = data.finish_date - data.start_date;
